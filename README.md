@@ -3,7 +3,7 @@
 
 ## Projects built for fun
 
-###  [Albion Online Economy
+###  [Albion Online Economy]
 Scripts written in Excel with many tables for many posibilities of earning silver which i used and calculated.
 * Calculating average profit summarizing things like journals profit, different prices depending on quality, focus cost, and final profit in $ and %
 * Profit from islands on t6-t7 fishermans (price of upgrading and preparations)
