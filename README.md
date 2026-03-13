@@ -3,7 +3,7 @@
 
 ## Projects built for fun
 
-###  [Albion Online Economy Analysis](link_do_repo)
+###  [Albion Online Economy
 Scripts written in Excel with many tables for many posibilities of earning silver which i used and calculated.
 * Calculating average profit summarizing things like journals profit, different prices depending on quality, focus cost, and final profit in $ and %
 * Profit from islands on t6-t7 fishermans (price of upgrading and preparations)
@@ -16,7 +16,8 @@ Scripts written in Excel with many tables for many posibilities of earning silve
 * Table of diving profit between party members, where some dont get 100%
 Extra 2 sheets with calculations made by hand and less important things
 
-###  [Game Codes](link_do_repo)
-* **What it is:** An automation script built to handle highly randomized turn-based combat.
-* **Why I built it:** I wanted to see if I could write a macro that survives unpredictable RNG. I mathematically optimized a combat loop to account for worst-case scenarios (like consecutive 15% enemy dodges or damage variance). It successfully ran for 5+ hours without breaking.
-* **Tech:** Logic optimization, Fault tolerance, Scripting.
+###  [Game Codes]
+* Python's Script for Dragon Eternity game to auto find and follow enemy by searching in screen for enemy model and number under it, and activating TinyTask script to fight in combat
+* Fishing code to Metin 2 for Raspberry pi, which automaticly click correct keyboard button, and respond to required numbers of space to click randomly selected by game
+* Scanning Albion online screen, to exctract items, its tier, enchant, and number in stacks
+* 
