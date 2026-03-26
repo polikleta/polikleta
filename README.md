@@ -10,6 +10,7 @@ This is where I keep my academic work and foundational code. It includes my cour
 * Using Python to solve most of problems
 * Some Data Warehouse problems
 etc.
+/
 Note: The source code in these academic projects is written in English, but the accompanying theoretical reports and PDF documentation are in Polish.
 ---
 
