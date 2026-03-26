@@ -1,8 +1,13 @@
 
 ---
+##  University Stuff
 
-
-
+###  [School Repository](https://github.com/polikleta/School)
+This is where I keep my academic work and foundational code. It includes my coursework on:
+* Deep Learning & Data Exploration
+* Relational Databases
+* Probability and Non-linear Regression
+---
 
 ## Projects built for me and by me
 
