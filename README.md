@@ -7,6 +7,9 @@ This is where I keep my academic work and foundational code. It includes my cour
 * Deep Learning & Data Exploration
 * Relational Databases
 * Probability and Non-linear Regression
+* Using Python to solve most of problems
+* Some Data Warehouse problems
+etc.
 ---
 
 ## Projects built for me and by me
