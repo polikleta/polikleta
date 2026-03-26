@@ -4,7 +4,7 @@
 
 
 
-## Projects built for me
+## Projects built for me and by me
 
 ###  [Albion Online Economy]
 Scripts written in Excel with many tables for many posibilities of earning silver which i used and calculated.
