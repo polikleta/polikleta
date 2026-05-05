@@ -1,0 +1,34 @@
+DRAGON ETERNITY JOURNAL: AUTOMATIZATION PROBLEMS:
+- Rounds can take a different amount of time (e.g., sometimes 3s, sometimes 5s).
+- Crit Chance, Crit Damage, Normal Damage, Dodge Chance, and Block Chance are "Random" — you can't predict when they will happen.
+a) This forces you to predict the worst-case scenario (as accurately as possible).
+b) You must use overhealing to die as rarely as possible (which is expensive).
+- Enemies have a random chance to apply a debuff with each auto-attack.
+- Your biggest profit is when you minimize damage and maximize survivability. This is because using "elemental eyes" doubles the cost of spells, but in exchange gives items worth around 1.5s per 100 mana used. You can't level up too fast, and that's the reason.
+- Heals and Orbs cost money, so it's good to use the cheapest ones.
+- Enemies can move on a 2.5D map, and their Attack window is placed differently depending on their position.
+
+So, in total:
+- A fight can last 70 seconds or even 230 seconds.
+- You can die too quickly, or you might not be able to win because the enemy blocked everything :c
+- Once per 100 kills, there is a notification (prize) that has to be clicked to do anything else.
+- Potions and orbs are refilled automatically as long as you have them in your equipment.
+- The program can click the wrong area instead of the enemy because of the color threshold, which is high, but it can still pick the wrong spot sometimes.
+
+What happens if you die too quickly?
+The loop will end by clicking the exact place that closes the fight summary (it's the same button for winning and losing).
+
+What happens if you don't end the fight during the loop?
+TinyTask will repeat the whole fight in about 15-20 seconds, so you lose that one loop, but you don't die (this is a very rare situation).
+
+What happens when you kill 100 enemies?
+The reward will be accepted, and everything will continue.
+
+What happens if you get an internet connection error?
+Well, you'll probably have to start it again, because the position on the map will be different.
+
+What happens if I use another resolution?
+TinyTask records by pixels, so there will be a different pixel distance. You have to work on one specific resolution.
+
+What happens if everything is okay?
+You can farm the whole level, which takes up to 5000 mobs to kill. each mob gives around 15s. which gives 750G. its about 250h. ITS MORE THAN ENOUGH. I recommend using this in rounds of max 6 hours.
