@@ -1,0 +1,208 @@
+#code that connects with "mini computer" (ESP) and sends him a signal to click space enough times
+#it takes screenshoot, and crop special window, where after clicking bait and fishing in metin 2, game asks you to click 1-5 times space in about 1s to catch a fish.
+#Thereshold was in about 95%+ all time, so numbers have been correctly recognized all time, and even if it was mistaken somehow loop has been created to repeat even after that. Its mostly about logistic possible problems, but it can work unless you dont have bait or space in inventory
+#game blocks normal clicking made by python or tinytask, it required, to make "manual" clicking, which could be made by ESP
+#preety time saving, but obviously its not better than normal playing :)
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import cv2
+import numpy as np
+import pyautogui
+import pytesseract
+import time
+import keyboard
+import serial
+import random
+import sys
+from datetime import datetime, timedelta
+
+# Serial port settings
+port = 'COM4'
+baudrate = 115200
+
+# Set path to Tesseract-OCR
+pytesseract.pytesseract.tesseract_cmd = r'C:\Users\polik\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+
+# Control flag
+running = False
+
+def initialize_serial():
+    try:
+        ser = serial.Serial(port, baudrate, timeout=1)
+        print(f"Connected to {port} at {baudrate} baud")
+        return ser
+    except Exception as e:
+        print(f"Connection error to {port}: {str(e)}", file=sys.stderr)
+        return None
+
+def get_random_delay(base, variation):
+    """Returns random delay within given range"""
+    return random.uniform(max(0, base - variation), base + variation)
+
+def send_random_initial_command(ser):
+    """Send random command (1, 2 or 3)"""
+    if ser is None:
+        return
+        
+    cmd = random.choice([b'1', b'2', b'3'])
+    time.sleep(get_random_delay(4, 0.2))
+    ser.write(cmd)
+    print(f"Sent '{cmd.decode()}' (random initial command)")
+    time.sleep(get_random_delay(4, 0.2))
+
+def send_secondary_command(ser):
+    """Send secondary command (4)"""
+    if ser is None:
+        return
+        
+    time.sleep(get_random_delay(2, 0.2))
+    ser.write(b'4')
+    print("Sent '4' (secondary command)")
+    time.sleep(get_random_delay(2, 0.2))
+
+def find_text_on_screen(template_path, ser):
+    global running
+    try:
+        # Load template image
+        template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+        if template is None:
+            print("Error: Could not load template file", file=sys.stderr)
+            return
+
+        # Get template dimensions
+        template_w, template_h = template.shape[::-1]
+
+        # Set matching threshold
+        threshold = 0.7
+        
+        # Set timeout for text search (1 minute)
+        search_timeout = timedelta(minutes=2)
+        search_start_time = datetime.now()
+
+        # Main screen checking loop
+        while running:
+            if keyboard.is_pressed('k'):
+                print("Stopping script...")
+                running = False
+                break
+
+            # Check if timeout occurred
+            if datetime.now() - search_start_time > search_timeout:
+                print("Timeout reached - restarting commands...")
+                send_random_initial_command(ser)
+                send_secondary_command(ser)
+                search_start_time = datetime.now()  # Reset timeout timer
+                continue
+
+            # Capture screenshot
+            screenshot = pyautogui.screenshot()
+            screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
+
+            # Template matching
+            result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+
+            if max_val >= threshold:
+                print(f"Text found with confidence: {max_val:.2f}")
+                top_left = max_loc
+                bottom_right = (top_left[0] + template_w, top_left[1] + template_h)
+
+                # Extract ROI
+                roi = screenshot[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+
+                # OCR processing
+                custom_config = r'--oem 3 --psm 6'
+                text = pytesseract.image_to_string(roi, config=custom_config)
+                print(f"Recognized text: {text.strip()}")
+
+                # Find number of space clicks
+                if "kliknij spacje:" in text.lower() or "kliknij spacie" in text.lower():
+                    try:
+                        x = int(text.lower().split("kliknij spacje:")[1].strip().split()[0])
+                        print(f"Required space clicks: {x}")
+
+                        # Wait before sending spaces
+                        time.sleep(0.7)
+
+                        # Send spaces with random delay
+                        for i in range(x):
+                            if not running:
+                                break
+                            if ser is not None:
+                                ser.write(b' ')
+                                print(f"Pressed SPACE ({i+1}/{x})")
+                            time.sleep(get_random_delay(0.08, 0.03))
+
+                        if not running:
+                            break
+
+                        # Wait 2 seconds after spaces
+                        print("Waiting 2 seconds before restarting...")
+                        time.sleep(2)
+
+                        # Restart the process by sending initial commands again
+                        if ser is not None and running:
+                            send_random_initial_command(ser)
+                            send_secondary_command(ser)
+
+                        # Continue the loop to search for text again
+                        continue
+
+                    except (ValueError, IndexError) as e:
+                        print(f"Text processing error: {str(e)}", file=sys.stderr)
+                break
+            else:
+                print("Text not found on screen. Retrying in 0.2 second...")
+                time.sleep(0.2)
+    except Exception as e:
+        print(f"Error occurred: {str(e)}", file=sys.stderr)
+
+def main():
+    global running
+    print("Press 's' to start or 'k' to stop...")
+    
+    while True:
+        try:
+            if keyboard.is_pressed('s') and not running:
+                print("Starting script...")
+                time.sleep(3)
+                running = True
+                
+                ser = initialize_serial()
+                if ser is None:
+                    running = False
+                    continue
+
+                # Initial commands
+                if ser is not None:
+                    send_random_initial_command(ser)
+                    send_secondary_command(ser)
+
+                # Template image path
+                template_path = r"C:\Users\polik\Desktop\zdjecia\ryba.bmp"
+
+                # This will now loop indefinitely until 'k' is pressed
+                while running:
+                    find_text_on_screen(template_path, ser)
+
+                if ser is not None:
+                    ser.close()
+                    print("Serial connection closed")
+            
+            if keyboard.is_pressed('k'):
+                running = False
+            
+            time.sleep(0.1)
+        except KeyboardInterrupt:
+            running = False
+            print("\nScript terminated")
+            break
+
+if __name__ == "__main__":
+    # Set UTF-8 encoding
+    if sys.version_info[0] < 3:
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+    
+    main()
