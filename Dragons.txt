@@ -1,0 +1,107 @@
+import cv2
+import numpy as np
+import pyautogui
+import time
+import keyboard  # Library for keyboard monitoring
+
+def main():
+    # Load the opponent template (image of the opponent)
+    template_opponent = cv2.imread("C:\\Users\\polik\\Desktop\\zdjecia\\miecze.bmp", cv2.IMREAD_GRAYSCALE)
+    if template_opponent is None:
+        print("Error: Could not load opponent template. Make sure the file exists.")
+        return
+
+    template_opponent_w, template_opponent_h = template_opponent.shape[::-1]
+    print(f"Opponent template loaded. Size: {template_opponent_w}x{template_opponent_h}")
+
+    # Load the "Attack" button template
+    template_attack = cv2.imread("C:\\Users\\polik\\Desktop\\zdjecia\\Attack3.bmp", cv2.IMREAD_GRAYSCALE)
+    if template_attack is None:
+        print("Error: Could not load 'Attack' button template. Make sure the file exists.")
+        return
+
+    template_attack_w, template_attack_h = template_attack.shape[::-1]
+    print(f"'Attack' button template loaded. Size: {template_attack_w}x{template_attack_h}")
+
+    # Wait to allow switching screens
+    print("Waiting 2 seconds for you to switch screens...")
+    time.sleep(3)
+
+    # Set the match threshold for the opponent
+    threshold_opponent = 0.65
+
+    # Set the match threshold for the "Attack" button
+    threshold_attack = 0.75
+
+    # Variable to control if the opponent has been found
+    opponent_found = False
+
+    while not opponent_found:
+        # Check if the '5' key is pressed (breaks the loop and restarts the script)
+        if keyboard.is_pressed('5'):
+            print("Key '5' pressed. Restarting script...")
+            return  # Exit the main() function to restart the script
+
+        # Take a screenshot
+        print("Taking a screenshot...")
+        screenshot = pyautogui.screenshot()
+        screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
+        print("Screenshot taken and converted to grayscale.")
+
+        # Search for the opponent on the screen
+        result_opponent = cv2.matchTemplate(screenshot, template_opponent, cv2.TM_CCOEFF_NORMED)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result_opponent)
+
+        print(f"Max match value for opponent: {max_val} (threshold: {threshold_opponent})")
+
+        if max_val >= threshold_opponent:
+            print("Opponent found on the screen!")
+            top_left = max_loc
+            bottom_right = (top_left[0] + template_opponent_w, top_left[1] + template_opponent_h)
+
+            # Click on the opponent (center of the template)
+            click_x = top_left[0] + template_opponent_w // 2
+            click_y = top_left[1] + template_opponent_h // 2
+            print(f"Clicking at position: ({click_x}, {click_y})")
+            pyautogui.click(click_x, click_y)
+
+            # Wait for the "Attack" button to appear
+            print("Waiting 1 second for the 'Attack' button to appear...")
+            time.sleep(1)
+
+            # Take a screenshot after clicking the opponent
+            print("Taking a screenshot after clicking the opponent...")
+            screenshot_after_click = pyautogui.screenshot()
+            screenshot_after_click = cv2.cvtColor(np.array(screenshot_after_click), cv2.COLOR_RGB2GRAY)
+
+            # Search for the "Attack" button on the new screenshot
+            result_attack = cv2.matchTemplate(screenshot_after_click, template_attack, cv2.TM_CCOEFF_NORMED)
+            min_val_attack, max_val_attack, min_loc_attack, max_loc_attack = cv2.minMaxLoc(result_attack)
+
+            print(f"Max match value for 'Attack' button: {max_val_attack} (threshold: {threshold_attack})")
+
+            if max_val_attack >= threshold_attack:
+                print("'Attack' button found on the screen!")
+                top_left_attack = max_loc_attack
+                bottom_right_attack = (top_left_attack[0] + template_attack_w, top_left_attack[1] + template_attack_h)
+
+                # Click the "Attack" button
+                click_x_attack = top_left_attack[0] + template_attack_w // 2
+                click_y_attack = top_left_attack[1] + template_attack_h // 2
+                print(f"Clicking the 'Attack' button at position: ({click_x_attack}, {click_y_attack})")
+                pyautogui.click(click_x_attack, click_y_attack)
+
+                # Opponent found and clicked, so we can exit the loop
+                opponent_found = True
+            else:
+                print("'Attack' button not found on the screen.")
+        else:
+            print("Opponent not found on the screen. Retrying in 1 second...")
+            time.sleep(1)  # Wait 1 second before searching again
+
+# Main program loop
+while True:
+    print("Press the '5' key to start the script...")
+    keyboard.wait('5')  # Wait for the user to press the '5' key
+    print("Starting script...")
+    main()  # Run the main() function
